@@ -1,0 +1,95 @@
+* {
+    margin: 0;
+    padding: 0;
+    background-color: rgb(125, 201, 104);
+}
+
+body {
+    /* background-color: lightblue; */
+    background-image: url("Tech-PSY.jpg");
+    background-repeat: no-repeat;
+    background-size: cover;
+}
+
+.menu_inicio {
+    background-color: rgb(219, 230, 173);
+    font-family: verdana;
+    font-size: 20px;
+    margin: 40px;
+    padding: 20px;
+}
+
+
+
+.ultima {
+    display: flex;
+    justify-content: center;
+    background-color: rgb(236, 215, 51);
+    width: 80%;
+    height: 600;
+    margin: 20px auto;
+    padding: 20px;
+}
+
+.enlaces {
+    width: 80%;
+    height: 80%;
+    margin: 10px;
+    padding: 20px;
+    font-family: verdana;
+    font-size: 24px;
+}
+
+.enlaces h2{
+    text-align: center;
+}
+
+.enlaces li {
+    padding: 4px;
+    list-style-type: none;
+}
+
+.enlaces a{
+      display: block;
+      padding: 10px;
+      text-decoration: none;
+      color: #000;
+      background-color: #ccc;
+}
+
+.enlaces a:hover {
+      background-color: #999;
+}
+
+.coin360 {
+    width: 80%;
+    height: 80%;
+    margin: 10px;
+    border: none;
+}
+
+
+
+
+
+
+
+/*
+h3 {
+      color: green;
+}
+
+p {
+      font-family: verdana;
+      font-size: 20px;
+      border-color: rgb(109, 4, 4);
+      margin-left: 100px;
+}
+
+Pruebas Menú
+
+En el CSS, utilizamos la propiedad list-style-type: none para quitar los puntos de la lista, display: inline para que los elementos del menú se muestren en una línea, display: block para que los enlaces ocupen todo el ancho disponible, padding para añadir espacio alrededor de los enlaces, y text-decoration: none para eliminar la decoración de subrayado de los enlaces.
+
+También hemos definido estilos para el estado de hover (:hover) en los enlaces, cambiando el color de fondo para resaltar el elemento cuando el cursor pasa sobre él.
+
+*/
