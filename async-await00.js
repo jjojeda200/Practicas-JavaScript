@@ -1,24 +1,28 @@
-function obtenerDatosDeAPI() {
-  // Hacemos una solicitud a una API ficticia para obtener datos
-  return fetch('https://jsonplaceholder.typicode.com/posts/1')
-    .then(response => {
-      // Verificamos si la respuesta es exitosa
-      if (!response.ok) {
-        // Si la respuesta no es exitosa, lanzamos un error
-        throw new Error('Error en la solicitud: ' + response.statusText);
-      }
-      // Convertimos la respuesta a formato JSON
-      return response.json();
-    });
+async function esperandoDatos() {
+  return "Esperando datos";
 }
 
-// Uso de la función para obtener datos de la API
-obtenerDatosDeAPI()
-  .then(datos => {
-    // Manejo de los datos obtenidos
-    console.log('Datos obtenidos:', datos);
-  })
-  .catch(error => {
-    // Manejo de errores
-    console.error('Error:', error.message);
+function datosRecibidos() {
+  return new Promise((resolve, reject) => {
+    // setTimeout(() => resolve("Datos recibidos"), 2000);
+    setTimeout(() => reject("Datos no recibidos"), 2000);
   });
+}
+
+/* 
+async function getDatos() {
+  const data = await datosRecibidos();
+  console.log(data); // Output: Datos recibidos (después de 2 segundos)
+}
+*/
+async function getDatos() {
+  try {
+    const data = await datosRecibidos();
+    console.log(data); // Output: Datos recibidos (después de 2 segundos)
+  } catch (error) {
+    console.error("Error:", error);
+  }
+}
+
+esperandoDatos().then(console.log);
+getDatos();
