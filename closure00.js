@@ -1,44 +1,18 @@
-function eventManager(fn) {
-  let events = [];
-  let executing = false;
 
-  return async () => {
-    events.push(fn);
 
-    if (!executing) {
-      executing = true;
-      while (events.length) {
-        await events.shift()();
-      }
-      executing = false;
-    }
+function Bind(text, div1, div2){
+
+  return function(){
+    document.getElementById(div1).innerHTML = document.getElementById(text).value;
+    document.getElementById(div2).innerHTML = document.getElementById(text).value;
   };
 }
 
-const manager = eventManager(async () => {
-  const proccess = crypto.randomUUID();
-  console.log("Inicio " + proccess);
-
-  await new Promise((resolve) => {
-    setTimeout(() => {
-      console.log("Finaliza " + proccess);
-      resolve();
-    }, 2000);
-  });
-});
-
-const managerURL = eventManager(async () => {
-  const num = Math.floor(Math.random() * 100 + 1);
-  console.log("Inicio " + num);
-  const json = await fetch("https://jsonplaceholder.typicode.com/todos/" + num)
-    .then((response) => response.json())
-    .then((json) => json);
-  console.log("Finaliza " + num);
-  console.log(json);
-});
-
-for (let i = 0; i <= 10; i++) {
-  manager();
-  managerURL();
-  //manager();
-}
+let relation = Bind("capturar", "mostrar1", "mostrar2");
+/*
+Cada vez que el usuario suelta una tecla después de escribir en el campo de texto (capturar),
+la función relation se ejecuta automáticamente, actualizando los divs mostrar1 y mostrar2 con
+el valor actual del campo de texto. Esto permite que el contenido de los divs se actualice en
+tiempo real a medida que el usuario escribe en el campo de texto.
+*/
+// document.getElementById("capturar").addEventListener("keyup", relation)
