@@ -1,6 +1,5 @@
 # José Juan Ojeda Granados
-# introducción a JavaScript
-# Ejercicios básicos ordenados + o - por temas y origen de la información
+# Apuntes de operaciones asíncronas
 ***************************************************************************************
 # Operaciones asíncronas
 >[!note] Operación vs Método
