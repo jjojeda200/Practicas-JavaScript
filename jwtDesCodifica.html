@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>JWT Encoder/Decoder</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            background-color: burlywood;
+        }
+        textarea, input, select {
+            margin: 10px 0;
+            width: 100%;
+        }
+        button {
+            padding: 10px;
+            margin-top: 10px;
+            cursor: pointer;
+        }
+        pre {
+            background: #f4f4f4;
+            padding: 10px;
+        }
+    </style>
+</head>
+<body>
+    <h1>JWT Encoder/Decoder</h1>
+    <h2>Codificar JWT</h2>
+    <p>
+    <textarea id="payloadInput" placeholder="Introduce el payload JSON aquí" rows="10"></textarea>
+    <input type="text" id="secretInput" placeholder="Introduce la clave secreta">
+    <select id="algorithmSelect">
+        <option value="HS256">HS256</option>
+        <option value="HS384">HS384</option>
+        <option value="HS512">HS512</option>
+    </select>
+    <button onclick="encodeJWT()">Codificar JWT</button>
+    <h2>Decodificar JWT</h2>
+    <textarea id="jwtInput" placeholder="Introduce tu JWT aquí" rows="4"></textarea>
+    <button onclick="decodeJWT()">Decodificar JWT</button>
+    <h2>Resultado</h2>
+    <pre id="output"></pre>
+
+    <script>
+        // Base64 URL Safe encoding/decoding functions
+        function base64UrlEncode(str) {
+            return btoa(unescape(encodeURIComponent(str)))
+                .replace(/\+/g, '-')
+                .replace(/\//g, '_')
+                .replace(/=+$/, '');
+        }
+
+        function base64UrlDecode(str) {
+            let base64 = str.replace(/-/g, '+').replace(/_/g, '/');
+            switch (base64.length % 4) {
+                case 0:
+                    break;
+                case 2:
+                    base64 += '==';
+                    break;
+                case 3:
+                    base64 += '=';
+                    break;
+                default:
+                    throw 'Formato de base64 no válido';
+            }
+            return decodeURIComponent(escape(atob(base64)));
+        }
+
+        // HMAC SHA functions for JWT signing
+        async function hmacSha256(key, message) {
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(key);
+            const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-256' }, false, ['sign']);
+            const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(message));
+            return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        async function hmacSha384(key, message) {
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(key);
+            const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-384' }, false, ['sign']);
+            const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(message));
+            return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        async function hmacSha512(key, message) {
+            const encoder = new TextEncoder();
+            const keyData = encoder.encode(key);
+            const cryptoKey = await crypto.subtle.importKey('raw', keyData, { name: 'HMAC', hash: 'SHA-512' }, false, ['sign']);
+            const signature = await crypto.subtle.sign('HMAC', cryptoKey, encoder.encode(message));
+            return base64UrlEncode(String.fromCharCode(...new Uint8Array(signature)));
+        }
+
+        // Encode JWT function
+        async function encodeJWT() {
+            const payloadInput = document.getElementById('payloadInput').value.trim();
+            const secretInput = document.getElementById('secretInput').value.trim();
+            const algorithmSelect = document.getElementById('algorithmSelect').value;
+
+            if (!payloadInput || !secretInput) {
+                document.getElementById('output').textContent = 'Por favor, introduce el payload y la clave secreta.';
+                return;
+            }
+
+            try {
+                const header = {
+                    alg: algorithmSelect,
+                    typ: 'JWT'
+                };
+                const payload = JSON.parse(payloadInput);
+
+                const headerEncoded = base64UrlEncode(JSON.stringify(header));
+                const payloadEncoded = base64UrlEncode(JSON.stringify(payload));
+
+                let signatureEncoded;
+                switch (algorithmSelect) {
+                    case 'HS256':
+                        signatureEncoded = await hmacSha256(secretInput, `${headerEncoded}.${payloadEncoded}`);
+                        break;
+                    case 'HS384':
+                        signatureEncoded = await hmacSha384(secretInput, `${headerEncoded}.${payloadEncoded}`);
+                        break;
+                    case 'HS512':
+                        signatureEncoded = await hmacSha512(secretInput, `${headerEncoded}.${payloadEncoded}`);
+                        break;
+                    default:
+                        throw 'Algoritmo no soportado';
+                }
+
+                const jwt = `${headerEncoded}.${payloadEncoded}.${signatureEncoded}`;
+                document.getElementById('output').textContent = `JWT: ${jwt}`;
+            } catch (e) {
+                document.getElementById('output').textContent = `Error: ${e.message || e}`;
+            }
+        }
+
+        // Decode JWT function
+        function decodeJWT() {
+            const jwt = document.getElementById('jwtInput').value.trim();
+
+            if (!jwt) {
+                document.getElementById('output').textContent = 'Por favor, introduce un JWT.';
+                return;
+            }
+
+            const [headerEncoded, payloadEncoded, signatureEncoded] = jwt.split('.');
+
+            try {
+                const header = JSON.parse(base64UrlDecode(headerEncoded));
+                const payload = JSON.parse(base64UrlDecode(payloadEncoded));
+                const signature = signatureEncoded;
+
+                const output = {
+                    Header: header,
+                    Payload: payload,
+                    Signature: signature
+                };
+
+                document.getElementById('output').textContent = JSON.stringify(output, null, 2);
+            } catch (e) {
+                document.getElementById('output').textContent = 'JWT no válido. Asegúrate de que el formato es correcto.';
+            }
+        }
+    </script>
+</body>
+</html>

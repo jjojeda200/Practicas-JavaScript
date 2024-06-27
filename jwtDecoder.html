@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>JWT Decoder</title>
+  </head>
+  <body>
+    <h1>JWT Decoder</h1>
+    <textarea
+      id="jwtInput"
+      placeholder="Introduce tu JWT aquí"
+      rows="8"
+      cols="100"
+    ></textarea>
+    <br />
+    <button onclick="decodeJWT()">Decodificar JWT</button>
+    <h2>Decodificación:</h2>
+    <pre id="output"></pre>
+
+    <script>
+      function decodeBase64(str) {
+        let base64 = str.replace(/-/g, "+").replace(/_/g, "/");
+        switch (base64.length % 4) {
+          case 0:
+            break;
+          case 2:
+            base64 += "==";
+            break;
+          case 3:
+            base64 += "=";
+            break;
+          default:
+            throw "Formato de base64 no válido";
+        }
+        return decodeURIComponent(escape(atob(base64)));
+      }
+
+      function decodeJWT() {
+        const jwt = document.getElementById("jwtInput").value.trim();
+
+        if (!jwt) {
+          document.getElementById("output").textContent =
+            "Por favor, introduce un JWT.";
+          return;
+        }
+
+        const [headerEncoded, payloadEncoded, signatureEncoded] =
+          jwt.split(".");
+
+        try {
+          const header = JSON.parse(decodeBase64(headerEncoded));
+          const payload = JSON.parse(decodeBase64(payloadEncoded));
+          const signature = signatureEncoded;
+
+          const output = {
+            Header: header,
+            Payload: payload,
+            Signature: signature,
+          };
+
+          document.getElementById("output").textContent = JSON.stringify(
+            output,
+            null,
+            2
+          );
+        } catch (e) {
+          document.getElementById("output").textContent =
+            "JWT no válido. Asegúrate de que el formato es correcto.";
+        }
+      }
+    </script>
+  </body>
+</html>
